@@ -1,0 +1,5 @@
+# Comando para subir postgres
+docker run --name librarydb -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library --network library-network postgres
+
+# Comando para subir o pgadmin
+docker run --name pgadmin4 -p 15432:80 -e PGADMIN_DEFAULT_EMAIL=edu@dev.com -e PGADMIN_DEFAULT_PASSWORD=edua@dev --network library-network dpage/pgadmin4
