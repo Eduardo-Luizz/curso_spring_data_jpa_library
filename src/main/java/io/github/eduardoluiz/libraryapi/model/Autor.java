@@ -30,6 +30,9 @@ public class Autor {
     @Column(name = "nacionalidade", length = 50, nullable = false)
     private String nacionalidade;
 
-    @OneToMany(mappedBy = "autor") // Diz que essa entidade não tem essa coluna é apenas um mapeamento
+    @OneToMany(
+            mappedBy = "autor"
+            //cascade = CascadeType.ALL
+    ) // Diz que essa entidade não tem essa coluna é apenas um mapeamento
     private List<Livro> livros;
 }
