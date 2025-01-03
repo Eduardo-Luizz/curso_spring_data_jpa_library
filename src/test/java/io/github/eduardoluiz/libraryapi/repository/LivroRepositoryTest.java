@@ -99,4 +99,28 @@ public class LivroRepositoryTest {
         List<Livro> lista = livroRepository.findByTituloAndPreco("O roubo a casa da moeda", BigDecimal.valueOf(20.50));
         lista.forEach(System.out::println);
     }
+
+    @Test
+    public void listarLivrosComQueryJPQL() {
+        var resultado = livroRepository.listarTodosOrdenadoPorTituloAndPreco();
+        resultado.forEach(System.out::println);
+    }
+
+    @Test
+    public void listarAutoresDosLivros() {
+        var resultado = livroRepository.listarAutoresDosLivros();
+        resultado.forEach(System.out::println);
+    }
+
+    @Test
+    public void listarTitulosNaoRepetidosDosLivros() {
+        var resultado = livroRepository.listarNomesDiferentesLivros();
+        resultado.forEach(System.out::println);
+    }
+
+    @Test
+    public void listarGenerrosDeLivrosBrasileiros() {
+        var resultado = livroRepository.listarGenerosAutoresBrasileiros();
+        resultado.forEach(System.out::println);
+    }
 }
