@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @SpringBootTest
@@ -79,5 +80,23 @@ public class LivroRepositoryTest {
 
         System.out.println("Título livro: " + livro.getTitulo());
 //        System.out.println("Autor livro: " + livro.getAutor().getNome()); Com o Lazy devemos comentar essa linha
+    }
+
+    @Test
+    public void pesquisaPorTituloTest() {
+        List<Livro> listaTitulo = livroRepository.findByTitulo("O roubo a casa da moeda");
+        listaTitulo.forEach(System.out::println);
+    }
+
+    @Test
+    public void pesquisaPorIsbnTest() {
+        List<Livro> listaIsbn = livroRepository.findByIsbn("76564831239");
+        listaIsbn.forEach(System.out::println);
+    }
+
+    @Test
+    public void pesquisaPorTituloEPrecoTest() {
+        List<Livro> lista = livroRepository.findByTituloAndPreco("O roubo a casa da moeda", BigDecimal.valueOf(20.50));
+        lista.forEach(System.out::println);
     }
 }
