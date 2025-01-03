@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "autor", schema = "public")
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "livros")
 public class Autor {
 
     @Id
@@ -31,7 +31,8 @@ public class Autor {
     private String nacionalidade;
 
     @OneToMany(
-            mappedBy = "autor"
+            mappedBy = "autor",
+            fetch = FetchType.LAZY
             //cascade = CascadeType.ALL
     ) // Diz que essa entidade não tem essa coluna é apenas um mapeamento
     private List<Livro> livros;

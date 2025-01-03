@@ -103,4 +103,16 @@ public class AutorRepositoryTest {
         autorRepository.save(autor);
         livroRepository.saveAll(autor.getLivros()); // Se usar cascade não precisa dessa linha nesse caso faz sentido usar cascade
     }
+
+    @Test
+    void listarLivrosAutorTest() {
+        var id = UUID.fromString("e23e1e1b-b547-4a63-b6f6-538605d730ec");
+        var autor = autorRepository.findById(id).get();
+
+        //Buscar os livros do autor
+        List<Livro> livrosLista = livroRepository.findByAutor(autor);
+        autor.setLivros(livrosLista);
+
+        autor.getLivros().forEach(System.out::println);
+    }
 }
