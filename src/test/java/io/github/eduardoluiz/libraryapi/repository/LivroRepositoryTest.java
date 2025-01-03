@@ -71,4 +71,13 @@ public class LivroRepositoryTest {
         var id = UUID.fromString("0a8444ef-11f6-4a9f-8f88-f194fe198253");
         livroRepository.deleteById(id);
     }
+
+    @Test
+    public void buscarLivrosTest() {
+        UUID id = UUID.fromString("f0c60601-32cb-4cfb-9106-ac0fc8fd6299");
+        Livro livro = livroRepository.findById(id).orElse(null);
+
+        System.out.println("Título livro: " + livro.getTitulo());
+//        System.out.println("Autor livro: " + livro.getAutor().getNome()); Com o Lazy devemos comentar essa linha
+    }
 }

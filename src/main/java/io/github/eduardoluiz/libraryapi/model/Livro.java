@@ -34,7 +34,10 @@ public class Livro {
     private BigDecimal preco;
 
     @JoinColumn(name = "id_autor")
-    @ManyToOne//(cascade = CascadeType.ALL)
+    @ManyToOne(
+            fetch = FetchType.LAZY // Quanto temos relacionamento ToOne dessa forma ele não trás o autor somente o livro, por padrão trás os dois (FetchType.EAGER)
+            // cascade = CascadeType.ALL
+    )
     private Autor autor;
 
 }
