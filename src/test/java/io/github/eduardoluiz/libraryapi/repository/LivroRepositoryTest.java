@@ -135,4 +135,14 @@ public class LivroRepositoryTest {
         var resultado = livroRepository.findByGeneroPositionalParameters(GeneroLivro.CIENCIA, "dataPublicação");
         resultado.forEach(System.out::println);
     }
+
+    @Test
+    public void deletePorGeneroQueryParamTest() {
+        livroRepository.deleteByGenero(GeneroLivro.CIENCIA);
+    }
+
+    @Test
+    public void updateDataPublicacaoTest() {
+        livroRepository.updateDataPublicacao(LocalDate.of(2020, 1, 1).atStartOfDay());
+    }
 }
