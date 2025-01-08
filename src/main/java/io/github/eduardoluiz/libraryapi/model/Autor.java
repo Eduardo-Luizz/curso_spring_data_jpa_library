@@ -1,19 +1,21 @@
 package io.github.eduardoluiz.libraryapi.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "autor", schema = "public")
-@Getter
-@Setter
-@ToString(exclude = "livros")
+@Data
+//@ToString(exclude = "livros")
+@EntityListeners(AuditingEntityListener.class)
 public class Autor {
 
     @Id
@@ -36,4 +38,16 @@ public class Autor {
             //cascade = CascadeType.ALL
     ) // Diz que essa entidade não tem essa coluna é apenas um mapeamento
     private List<Livro> livros;
+
+    @CreatedDate
+    @Column(name = "data_cadastro")
+    private LocalDateTime dataCadastro;
+
+    @LastModifiedDate
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
+
+    @Column(name = "id_usuario")
+    private UUID idUsuario;
+
 }
