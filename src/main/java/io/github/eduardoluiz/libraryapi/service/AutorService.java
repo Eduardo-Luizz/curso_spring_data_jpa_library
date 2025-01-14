@@ -1,7 +1,9 @@
 package io.github.eduardoluiz.libraryapi.service;
 
+import io.github.eduardoluiz.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import io.github.eduardoluiz.libraryapi.model.Autor;
 import io.github.eduardoluiz.libraryapi.repository.AutorRepository;
+import io.github.eduardoluiz.libraryapi.repository.LivroRepository;
 import io.github.eduardoluiz.libraryapi.validator.AutorValidator;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +16,12 @@ public class AutorService {
 
     private final AutorRepository autorRepository;
     private final AutorValidator autorValidator;
+    private final LivroRepository livroRepository;
 
-    public AutorService(AutorRepository autorRepository, AutorValidator autorValidator) {
+    public AutorService(AutorRepository autorRepository, AutorValidator autorValidator, LivroRepository livroRepository) {
         this.autorRepository = autorRepository;
         this.autorValidator = autorValidator;
+        this.livroRepository = livroRepository;
     }
 
     public Autor salvar(Autor autor) {
@@ -40,6 +44,9 @@ public class AutorService {
     }
 
     public void deletar(Autor autor) {
+        if (possuiLivro(autor)) {
+            throw new OperacaoNaoPermitidaException("Não é permitido excluir um autor que possui livros cadastrados.");
+        }
         autorRepository.delete(autor);
     }
 
@@ -57,5 +64,9 @@ public class AutorService {
         }
 
         return autorRepository.findAll();
+    }
+
+    public boolean possuiLivro(Autor autor) {
+        return livroRepository.existsByAutor(autor);
     }
 }
