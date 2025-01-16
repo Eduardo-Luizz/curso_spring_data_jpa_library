@@ -6,6 +6,7 @@ import io.github.eduardoluiz.libraryapi.exceptions.OperacaoNaoPermitidaException
 import io.github.eduardoluiz.libraryapi.exceptions.RegistroDuplicadoException;
 import io.github.eduardoluiz.libraryapi.model.Autor;
 import io.github.eduardoluiz.libraryapi.service.AutorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class AutorController {
     private final AutorService autorService;
 
     @PostMapping
-    public ResponseEntity<Object> salvarAutor(@RequestBody AutorDTO autor) {
+    public ResponseEntity<Object> salvarAutor(@RequestBody @Valid AutorDTO autor) {
         try {
             Autor autorEntidade = autor.mapearParaAutor();
             autorService.salvar(autorEntidade);
