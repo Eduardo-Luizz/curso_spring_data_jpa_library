@@ -56,5 +56,4 @@ public class Livro {
 
     @Column(name = "id_usuario")
     private UUID idUsuario;
-
 }

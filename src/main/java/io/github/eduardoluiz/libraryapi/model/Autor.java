@@ -2,6 +2,7 @@ package io.github.eduardoluiz.libraryapi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "autor", schema = "public")
 @Data
-//@ToString(exclude = "livros")
+@ToString(exclude = "livros")
 @EntityListeners(AuditingEntityListener.class)
 public class Autor {
 
