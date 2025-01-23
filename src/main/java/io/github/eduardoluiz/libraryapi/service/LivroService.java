@@ -19,14 +19,10 @@ public class LivroService {
     private final AutorRepository autorRepository;
 
     public ResultadoPesquisaLivroDTO salvarLivro(CadastroLivroDTO dto) {
-        // 1) Converte DTO -> Entidade (só campos básicos)
         Livro livro = livroMapper.toEntity(dto);
-        // 2) Busca Autor
         Autor autor = autorRepository.findById(dto.idAutor()).orElse(null);
-        // 3) Associa o autor
         livro.setAutor(autor);
         Livro livroSalvo = livroRepository.save(livro);
-        // 4) Salva no banco
         return livroMapper.toResultadoPesquisaLivroDTO(livroSalvo);
     }
 }

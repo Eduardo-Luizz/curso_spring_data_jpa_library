@@ -17,7 +17,7 @@ import java.util.UUID;
 
 /**
  * @see LivroRepositoryTest
- * */
+ */
 
 public interface LivroRepository extends JpaRepository<Livro, UUID> {
 
@@ -54,12 +54,12 @@ public interface LivroRepository extends JpaRepository<Livro, UUID> {
     List<String> listarNomesDiferentesLivros();
 
     @Query("""
-        select distinct l.genero
-        from Livro l
-        join l.autor a
-        where a.nacionalidade = 'Americano'
-        order by l.genero
-    """)
+                select distinct l.genero
+                from Livro l
+                join l.autor a
+                where a.nacionalidade = 'Americano'
+                order by l.genero
+            """)
     List<String> listarGenerosAutoresBrasileiros();
 
     //Named parameters -> Parametros nomeados

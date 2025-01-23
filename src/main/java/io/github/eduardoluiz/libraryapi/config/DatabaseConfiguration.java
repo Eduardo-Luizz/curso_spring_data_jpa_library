@@ -24,7 +24,7 @@ public class DatabaseConfiguration {
     @Value("${spring.datasource.driver-class-name}")
     String driver;
 
-//    @Bean
+    //    @Bean
     public DataSource dataSource() {
         // Esse DriverManagerDataSource não é recomendado para prod
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
