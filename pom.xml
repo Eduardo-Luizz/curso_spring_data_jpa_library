@@ -71,20 +71,14 @@
 					<target>${java.version}</target>
 					<annotationProcessorPaths combine.children="append">
 						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</path>
+						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>
 							<version>${org.mapstruct.version}</version>
 						</path>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-							<version>${lombok.version}</version>
-						</path>
-<!--						<path>-->
-<!--							<groupId>org.projectlombok</groupId>-->
-<!--							<artifactId>lombok-mapstruct-binding</artifactId>-->
-<!--							<version>${lombok-mapstruck-bindings.version}</version>-->
-<!--						</path>-->
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
