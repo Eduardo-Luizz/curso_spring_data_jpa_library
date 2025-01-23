@@ -10,6 +10,9 @@ import io.github.eduardoluiz.libraryapi.repository.LivroRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class LivroService {
@@ -24,5 +27,9 @@ public class LivroService {
         livro.setAutor(autor);
         Livro livroSalvo = livroRepository.save(livro);
         return livroMapper.toResultadoPesquisaLivroDTO(livroSalvo);
+    }
+
+    public Optional<Livro> obterPorId(UUID id) {
+        return livroRepository.findById(id);
     }
 }

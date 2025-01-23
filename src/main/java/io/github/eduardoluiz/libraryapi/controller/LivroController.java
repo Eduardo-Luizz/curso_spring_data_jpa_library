@@ -7,10 +7,9 @@ import io.github.eduardoluiz.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("livros")
@@ -26,5 +25,14 @@ public class LivroController implements GenericController {
         ResultadoPesquisaLivroDTO livroDTO = livroService.salvarLivro(dto);
         var url = gerarHeaderLocation(livroDTO.id());
         return ResponseEntity.created(url).body(livroDTO);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ResultadoPesquisaLivroDTO> obterDetalhesLivro(@PathVariable("id") String id) {
+        return livroService.obterPorId(UUID.fromString(id))
+                .map(livro -> {
+                    var dto = livroMapper.toResultadoPesquisaLivroDTO(livro);
+                    return ResponseEntity.ok(dto);
+                }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
