@@ -13,14 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
 @RestController
 @RequestMapping("livros")
 @RequiredArgsConstructor
-public class LivroController {
+public class LivroController implements GenericController {
 
     private final LivroService livroService;
     private final LivroMapper livroMapper;
@@ -28,16 +27,12 @@ public class LivroController {
     @PostMapping
     public ResponseEntity<Object> salvar(@RequestBody @Valid CadastroLivroDTO dto) {
         try {
-
             ResultadoPesquisaLivroDTO livroDTO = livroService.salvarLivro(dto);
 
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(livroDTO.id())
-                    .toUri();
+            var url = gerarHeaderLocation(livroDTO.id());
 
-            return ResponseEntity.created(location).body(livroDTO);
+            return ResponseEntity.created(url).body(livroDTO);
+
         } catch (RegistroDuplicadoException e) {
             var erroDTO = ErroResposta.conflito(e.getMessage());
             return ResponseEntity.status(erroDTO.status()).body(erroDTO);
