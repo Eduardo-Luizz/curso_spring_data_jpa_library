@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("livros")
@@ -67,5 +66,18 @@ public class LivroController implements GenericController {
                 .map(livroMapper::toResultadoPesquisaLivroDTO)
                 .toList();
         return ResponseEntity.ok(lista);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Object> atualizar(
+            @PathVariable("id") UUID id,
+            @RequestBody @Valid CadastroLivroDTO dto) {
+
+        boolean atualizado = livroService.atualizar(id, dto);
+
+        if (!atualizado) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
     }
 }

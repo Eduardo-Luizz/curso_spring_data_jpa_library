@@ -67,4 +67,20 @@ public class LivroService {
 
         return livroRepository.findAll(specs);
     }
+
+    public boolean atualizar(UUID id, CadastroLivroDTO dto) {
+        Livro livro = livroRepository.findById(id).orElse(null);
+        if (livro == null) {
+            return false;
+        }
+
+        Autor autor = autorRepository.findById(dto.idAutor()).orElse(null);
+
+        Livro atualziado = livroMapper.toEntity(dto);
+        atualziado.setId(livro.getId());
+        atualziado.setAutor(autor);
+
+        livroRepository.save(atualziado);
+        return true;
+    }
 }
