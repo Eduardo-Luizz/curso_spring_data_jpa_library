@@ -4,6 +4,7 @@ import io.github.eduardoluiz.libraryapi.model.Autor;
 import io.github.eduardoluiz.libraryapi.model.GeneroLivro;
 import io.github.eduardoluiz.libraryapi.model.Livro;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +20,7 @@ import java.util.UUID;
  * @see LivroRepositoryTest
  */
 
-public interface LivroRepository extends JpaRepository<Livro, UUID> {
+public interface LivroRepository extends JpaRepository<Livro, UUID>, JpaSpecificationExecutor<Livro> {
 
     //Query Method -> Sempre devem começar com findBy ... e se for o caso concatenar com operador lógico: And, Or...
     // select * from livro where id_autor = id
