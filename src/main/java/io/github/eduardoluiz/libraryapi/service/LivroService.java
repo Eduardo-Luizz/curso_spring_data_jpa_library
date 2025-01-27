@@ -9,6 +9,7 @@ import io.github.eduardoluiz.libraryapi.model.Livro;
 import io.github.eduardoluiz.libraryapi.repository.AutorRepository;
 import io.github.eduardoluiz.libraryapi.repository.LivroRepository;
 import io.github.eduardoluiz.libraryapi.repository.specs.LivroSpecs;
+import io.github.eduardoluiz.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,14 @@ public class LivroService {
     private final LivroRepository livroRepository;
     private final LivroMapper livroMapper;
     private final AutorRepository autorRepository;
+    private final LivroValidator livroValidator;
 
     public ResultadoPesquisaLivroDTO salvarLivro(CadastroLivroDTO dto) {
         Livro livro = livroMapper.toEntity(dto);
-        Autor autor = autorRepository.findById(dto.idAutor()).orElse(null);
+        Autor autor = autorRepository.findById(dto.idAutor())
+                .orElseThrow(() -> new IllegalArgumentException("Autor não encontrado!"));
         livro.setAutor(autor);
+        livroValidator.validar(livro);
         Livro livroSalvo = livroRepository.save(livro);
         return livroMapper.toResultadoPesquisaLivroDTO(livroSalvo);
     }
@@ -69,18 +73,24 @@ public class LivroService {
     }
 
     public boolean atualizar(UUID id, CadastroLivroDTO dto) {
-        Livro livro = livroRepository.findById(id).orElse(null);
-        if (livro == null) {
+
+        Livro livroAntigo = livroRepository.findById(id).orElse(null);
+
+        if (livroAntigo == null) {
             return false;
         }
 
-        Autor autor = autorRepository.findById(dto.idAutor()).orElse(null);
+        Autor autor = autorRepository.findById(dto.idAutor())
+                .orElseThrow(() -> new IllegalArgumentException("Autor não encontrado!"));
 
-        Livro atualziado = livroMapper.toEntity(dto);
-        atualziado.setId(livro.getId());
-        atualziado.setAutor(autor);
 
-        livroRepository.save(atualziado);
+        Livro livroAtualizado = livroMapper.toEntity(dto);
+        livroAtualizado.setId(livroAntigo.getId());
+        livroAtualizado.setAutor(autor);
+
+        livroValidator.validar(livroAtualizado);
+        livroRepository.save(livroAtualizado);
+
         return true;
     }
 }
