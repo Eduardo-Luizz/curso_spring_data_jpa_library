@@ -6,9 +6,11 @@ import io.github.eduardoluiz.libraryapi.controller.mappers.LivroMapper;
 import io.github.eduardoluiz.libraryapi.model.Autor;
 import io.github.eduardoluiz.libraryapi.model.GeneroLivro;
 import io.github.eduardoluiz.libraryapi.model.Livro;
+import io.github.eduardoluiz.libraryapi.model.Usuario;
 import io.github.eduardoluiz.libraryapi.repository.AutorRepository;
 import io.github.eduardoluiz.libraryapi.repository.LivroRepository;
 import io.github.eduardoluiz.libraryapi.repository.specs.LivroSpecs;
+import io.github.eduardoluiz.libraryapi.security.SecurityService;
 import io.github.eduardoluiz.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ public class LivroService {
     private final LivroMapper livroMapper;
     private final AutorRepository autorRepository;
     private final LivroValidator livroValidator;
+    private final SecurityService securityService;
 
     public ResultadoPesquisaLivroDTO salvarLivro(CadastroLivroDTO dto) {
         Livro livro = livroMapper.toEntity(dto);
@@ -36,6 +39,8 @@ public class LivroService {
                 .orElseThrow(() -> new IllegalArgumentException("Autor não encontrado!"));
         livro.setAutor(autor);
         livroValidator.validar(livro);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        livro.setUsuario(usuario);
         Livro livroSalvo = livroRepository.save(livro);
         return livroMapper.toResultadoPesquisaLivroDTO(livroSalvo);
     }
