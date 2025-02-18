@@ -26,5 +26,9 @@ CREATE TABLE usuario (
     id uuid not null primary key,
     login varchar(20) not null unique,
     senha varchar(300) not null,
+    email varchar(150) not null,
     roles varchar []
 );
+
+ALTER TABLE usuario
+ADD email varchar(150);
