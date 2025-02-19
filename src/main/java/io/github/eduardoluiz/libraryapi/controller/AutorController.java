@@ -3,16 +3,11 @@ package io.github.eduardoluiz.libraryapi.controller;
 import io.github.eduardoluiz.libraryapi.controller.dto.AutorDTO;
 import io.github.eduardoluiz.libraryapi.controller.mappers.AutorMapper;
 import io.github.eduardoluiz.libraryapi.model.Autor;
-import io.github.eduardoluiz.libraryapi.model.Usuario;
-import io.github.eduardoluiz.libraryapi.security.SecurityService;
 import io.github.eduardoluiz.libraryapi.service.AutorService;
-import io.github.eduardoluiz.libraryapi.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
