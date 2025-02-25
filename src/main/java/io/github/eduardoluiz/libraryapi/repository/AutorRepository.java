@@ -1,6 +1,7 @@
 package io.github.eduardoluiz.libraryapi.repository;
 
 import io.github.eduardoluiz.libraryapi.model.Autor;
+import io.github.eduardoluiz.libraryapi.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -14,4 +15,6 @@ public interface AutorRepository extends JpaRepository<Autor, UUID> {
     List<Autor> findByNacionalidade(String nacionalidade);
     List<Autor> findByNomeAndNacionalidade(String nome, String nacionalidade);
     Optional<Autor> findByNomeAndDataNascimentoAndNacionalidade(String nome, LocalDate dataNascimento, String nacionalidade);
+
+    boolean existsByUsuario(Usuario usuario);
 }

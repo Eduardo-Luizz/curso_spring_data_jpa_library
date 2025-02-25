@@ -23,7 +23,7 @@ public class Usuario {
     @Column(nullable = false, length = 300)
     private String senha;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false, length = 150, unique = true)
     private String email;
 
     @Type(ListArrayType.class)

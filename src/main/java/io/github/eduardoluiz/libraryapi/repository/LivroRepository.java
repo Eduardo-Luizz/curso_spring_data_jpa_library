@@ -3,6 +3,7 @@ package io.github.eduardoluiz.libraryapi.repository;
 import io.github.eduardoluiz.libraryapi.model.Autor;
 import io.github.eduardoluiz.libraryapi.model.GeneroLivro;
 import io.github.eduardoluiz.libraryapi.model.Livro;
+import io.github.eduardoluiz.libraryapi.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -83,4 +84,6 @@ public interface LivroRepository extends JpaRepository<Livro, UUID>, JpaSpecific
     void updateDataPublicacao(LocalDateTime novaDataPublicacao);
 
     boolean existsByAutor(Autor autor);
+
+    boolean existsByUsuario(Usuario usuario);
 }
