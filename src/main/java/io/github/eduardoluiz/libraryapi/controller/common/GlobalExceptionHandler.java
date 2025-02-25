@@ -5,8 +5,8 @@ import io.github.eduardoluiz.libraryapi.controller.dto.ErroResposta;
 import io.github.eduardoluiz.libraryapi.exceptions.CampoInvalidoException;
 import io.github.eduardoluiz.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import io.github.eduardoluiz.libraryapi.exceptions.RegistroDuplicadoException;
+import io.github.eduardoluiz.libraryapi.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -56,6 +56,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErroResposta handleAccessDeniedException(AccessDeniedException ex) {
         return new ErroResposta(HttpStatus.FORBIDDEN.value(), "Acesso negado", List.of());
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErroResposta handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return ErroResposta.naoEncontrado(ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
