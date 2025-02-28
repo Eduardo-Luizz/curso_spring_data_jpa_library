@@ -31,11 +31,13 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public UsuarioResponseDTO buscarPorId(@PathVariable UUID id) {
         return usuarioService.buscarPorId(id);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<Page<UsuarioResponseDTO>> pesquisa (
             @RequestParam(value = "login", required = false)
             String login,
@@ -54,6 +56,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public UsuarioResponseDTO atualizar(
             @PathVariable UUID id,
             @RequestBody @Valid UsuarioRequestDTO dto
