@@ -45,11 +45,11 @@ public class AuthorizationServerConfiguration {
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                .apply(authorizationServerConfigurer)
-                .oidc(Customizer.withDefaults());
-
-        http.oauth2ResourceServer(oauth2Rs -> oauth2Rs.jwt(Customizer.withDefaults()));
-        http.formLogin(configurer -> configurer.loginPage("/login"));
+                .with(authorizationServerConfigurer,  (authorizationServer) -> {
+                    authorizationServer.oidc(Customizer.withDefaults());
+                })
+                .oauth2ResourceServer(oauth2Rs -> oauth2Rs.jwt(Customizer.withDefaults()))
+                .formLogin(configurer -> configurer.loginPage("/login"));
 
         return http.build();
     }
