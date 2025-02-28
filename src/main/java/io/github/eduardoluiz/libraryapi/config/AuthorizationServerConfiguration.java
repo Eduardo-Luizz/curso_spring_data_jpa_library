@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
@@ -65,7 +66,10 @@ public class AuthorizationServerConfiguration {
     public TokenSettings  tokenSettings() {
         return TokenSettings.builder()
                 .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+                //access_token: tokken utilizado nas requisições
                 .accessTokenTimeToLive(Duration.ofMinutes(60))
+                //refresh_token: token para renovar o access_token (Duração maior que a do access)
+                .refreshTokenTimeToLive(Duration.ofMinutes(90))
                 .build();
     }
 
@@ -103,5 +107,25 @@ public class AuthorizationServerConfiguration {
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+    }
+
+    @Bean
+    public AuthorizationServerSettings authorizationServerSettings () {
+        return AuthorizationServerSettings.builder()
+                //obter token
+                .tokenEndpoint("/oauth2/token")
+                //utilizado para consultar status do token
+                .tokenIntrospectionEndpoint("/oauth2/introspect")
+                //revogar
+                .tokenRevocationEndpoint("/oauth2/revoke")
+                //authorization endpoint
+                .authorizationEndpoint("/oauth2/authorize")
+                //informações do usuario OPEN ID CONNECT
+                .oidcUserInfoEndpoint("/oauth2/userinfo")
+                // obter chave publica para verificar a assinatura do token
+                .jwkSetEndpoint("/oauth2/jwks")
+                //logout
+                .oidcLogoutEndpoint("/oauth2/logout")
+                .build();
     }
 }
