@@ -1,7 +1,7 @@
 package io.github.eduardoluiz.libraryapi.security;
 
-import io.github.eduardoluiz.libraryapi.model.Usuario;
-import io.github.eduardoluiz.libraryapi.service.UsuarioService;
+import io.github.eduardoluiz.libraryapi.model.User;
+import io.github.eduardoluiz.libraryapi.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,9 +20,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LoginSocialSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-    private static final String SENHA_PADRAO = "435";
+    private static final String DEFAULT_PASSWORD = "435";
 
-    private final UsuarioService usuarioService;
+    private final UserService userService;
 
     @Override
     public void onAuthenticationSuccess(
@@ -35,32 +35,31 @@ public class LoginSocialSuccessHandler extends SavedRequestAwareAuthenticationSu
 
         String email = oAuth2User.getAttribute("email");
 
-        Usuario usuario = usuarioService.obterPorEmail(email);
+        User user = userService.getByEmail(email);
 
-        if (usuario == null) {
-            usuario = cadastrarUsuarioNaBase(email);
+        if (user == null) {
+            user = registerUserInDatabase(email);
         }
 
-        authentication = new CustomAuthentication(usuario);
+        authentication = new CustomAuthentication(user);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
-    private Usuario cadastrarUsuarioNaBase(String email) {
-        Usuario usuario;
-        usuario = new Usuario();
-        usuario.setEmail(email);
-        usuario.setLogin(obterLoginApartirEmail(email));
-        usuario.setSenha((SENHA_PADRAO));
-        usuario.setRoles(List.of("OPERADOR"));
+    private User registerUserInDatabase(String email) {
+        User user = new User();
+        user.setEmail(email);
+        user.setLogin(extractLoginFromEmail(email));
+        user.setPassword((DEFAULT_PASSWORD));
+        user.setRoles(List.of("OPERADOR"));
 
-        usuarioService.salvar(usuario);
-        return usuario;
+        userService.save(user);
+        return user;
     }
 
-    private String obterLoginApartirEmail(String email) {
+    private String extractLoginFromEmail(String email) {
         return email.substring(0, email.indexOf("@"));
     }
 }

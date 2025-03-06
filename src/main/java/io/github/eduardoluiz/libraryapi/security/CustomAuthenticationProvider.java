@@ -1,7 +1,7 @@
 package io.github.eduardoluiz.libraryapi.security;
 
-import io.github.eduardoluiz.libraryapi.model.Usuario;
-import io.github.eduardoluiz.libraryapi.service.UsuarioService;
+import io.github.eduardoluiz.libraryapi.model.User;
+import io.github.eduardoluiz.libraryapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,33 +15,33 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    private final UsuarioService usuarioService;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String login = authentication.getName();
-        String senhaDigitada = authentication.getCredentials().toString();
+        String enteredPassword = authentication.getCredentials().toString();
 
-        Usuario usuarioEncontrado = usuarioService.obterPorLogin(login);
+        User foundUser = userService.getByLogin(login);
 
-        if (usuarioEncontrado == null) {
-            throw getErrorUsuarioNaoEncontrado();
+        if (foundUser == null) {
+            throw getUserNotFoundError();
         }
 
-        String senhaCriptografada = usuarioEncontrado.getSenha();
+        String encryptedPassword = foundUser.getPassword();
 
-        boolean senhamBatem = passwordEncoder.matches(senhaDigitada, senhaCriptografada);
+        boolean passwordsMatch = passwordEncoder.matches(enteredPassword, encryptedPassword);
 
-        if (senhamBatem) {
-            return new CustomAuthentication(usuarioEncontrado);
+        if (passwordsMatch) {
+            return new CustomAuthentication(foundUser);
         }
 
-        throw getErrorUsuarioNaoEncontrado();
+        throw getUserNotFoundError();
     }
 
-    private UsernameNotFoundException getErrorUsuarioNaoEncontrado() {
-        return new UsernameNotFoundException("Usuário e/ou senha incorretos!");
+    private UsernameNotFoundException getUserNotFoundError() {
+        return new UsernameNotFoundException("Incorrect username and/or password!");
     }
 
     @Override

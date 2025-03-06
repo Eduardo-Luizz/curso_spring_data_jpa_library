@@ -1,4 +1,4 @@
-CREATE TABLE autor (
+CREATE TABLE author (
 	id uuid not null primary key,
 	nome varchar(100) not null,
 	data_nascimeto date not null,
@@ -8,7 +8,7 @@ CREATE TABLE autor (
 	id_usuario uuid
 );
 
-CREATE TABLE livro (
+CREATE TABLE book (
 	id uuid not null primary key,
 	isbn varchar(20) not null unique,
 	titulo varchar(150) not null,
@@ -18,11 +18,11 @@ CREATE TABLE livro (
 	data_cadastro timestamp,
     data_atualizacao timestamp,
     id_usuario uuid,
-	id_autor uuid not null references autor(id),
+	id_autor uuid not null references author(id),
 	constraint chk_genero check(genero in ('FICCAO', 'FANTASIA', 'MISTERIO', 'ROMANCE', 'BIOGRAFIA', 'CIENCIA'))
 );
 
-CREATE TABLE usuario (
+CREATE TABLE user (
     id uuid not null primary key,
     login varchar(20) not null unique,
     senha varchar(300) not null,
@@ -30,7 +30,7 @@ CREATE TABLE usuario (
     roles varchar []
 );
 
-ALTER TABLE usuario
+ALTER TABLE user
 ADD email varchar(150);
 
 CREATE TABLE client(

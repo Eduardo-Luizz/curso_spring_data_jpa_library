@@ -153,7 +153,7 @@ public class AuthorizationServerConfiguration {
                     context
                             .getClaims()
                             .claim("authorities", authoritiesList)
-                            .claim("email", authentication.getUsuario().getEmail())
+                            .claim("email", authentication.getUser().getEmail())
                             .claims(claims -> claims.remove("scope"));
                 }
             }

@@ -19,7 +19,7 @@ public class LoginViewController {
     @ResponseBody
     public String paginaHome(Authentication authentication) {
         if(authentication instanceof CustomAuthentication customAuthentication) {
-            System.out.println(customAuthentication.getUsuario());
+            System.out.println(customAuthentication.getUser());
         }
         return "Olá" + authentication.getName();
     }

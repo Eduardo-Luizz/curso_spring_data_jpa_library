@@ -1,6 +1,6 @@
 package io.github.eduardoluiz.libraryapi.security;
 
-import io.github.eduardoluiz.libraryapi.model.Usuario;
+import io.github.eduardoluiz.libraryapi.model.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 @Getter
 public class CustomAuthentication implements Authentication {
 
-    private final Usuario usuario;
+    private final User user;
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return this.usuario
+        return this.user
                 .getRoles()
                 .stream()
                 .map(SimpleGrantedAuthority::new)
@@ -32,12 +32,12 @@ public class CustomAuthentication implements Authentication {
 
     @Override
     public Object getDetails() {
-        return usuario;
+        return user;
     }
 
     @Override
     public Object getPrincipal() {
-        return usuario;
+        return user;
     }
 
     @Override
@@ -52,6 +52,6 @@ public class CustomAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        return usuario.getLogin();
+        return user.getLogin();
     }
 }

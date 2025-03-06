@@ -1,10 +1,10 @@
 package io.github.eduardoluiz.libraryapi.controller.common;
 
-import io.github.eduardoluiz.libraryapi.controller.dto.ErroCampo;
-import io.github.eduardoluiz.libraryapi.controller.dto.ErroResposta;
-import io.github.eduardoluiz.libraryapi.exceptions.CampoInvalidoException;
-import io.github.eduardoluiz.libraryapi.exceptions.OperacaoNaoPermitidaException;
-import io.github.eduardoluiz.libraryapi.exceptions.RegistroDuplicadoException;
+import io.github.eduardoluiz.libraryapi.controller.dto.ErrorField;
+import io.github.eduardoluiz.libraryapi.controller.dto.ErrorResponse;
+import io.github.eduardoluiz.libraryapi.exceptions.FieldInvalidException;
+import io.github.eduardoluiz.libraryapi.exceptions.OperationNotAllowedException;
+import io.github.eduardoluiz.libraryapi.exceptions.DuplicateRecordException;
 import io.github.eduardoluiz.libraryapi.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -22,54 +22,55 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public ErroResposta handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<FieldError> fieldErrors = ex.getFieldErrors();
-        List<ErroCampo> listaErros = fieldErrors
+        List<ErrorField> errorFields = fieldErrors
                 .stream()
-                .map(fe -> new ErroCampo(fe.getField(), fe.getDefaultMessage()))
+                .map(fe -> new ErrorField(fe.getField(), fe.getDefaultMessage()))
                 .collect(Collectors.toList());
-        return new ErroResposta(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Erro de validação", listaErros);
+        return new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Validation error", errorFields);
     }
 
-    @ExceptionHandler(RegistroDuplicadoException.class)
+    @ExceptionHandler(DuplicateRecordException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErroResposta handleRegistroDuplicadoException(RegistroDuplicadoException ex) {
-        return ErroResposta.conflito(ex.getMessage());
+    public ErrorResponse handleDuplicateRecordException(DuplicateRecordException ex) {
+        return ErrorResponse.conflict(ex.getMessage());
     }
 
-    @ExceptionHandler(OperacaoNaoPermitidaException.class)
+    @ExceptionHandler(OperationNotAllowedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErroResposta handleOperacaoNaoPermitidaException(OperacaoNaoPermitidaException ex) {
-        return ErroResposta.respostaPadrao(ex.getMessage());
+    public ErrorResponse handleOperationNotAllowedException(OperationNotAllowedException ex) {
+        return ErrorResponse.standardResponse(ex.getMessage());
     }
 
-    @ExceptionHandler(CampoInvalidoException.class)
+    @ExceptionHandler(FieldInvalidException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public ErroResposta handleCampoInvalidoException(CampoInvalidoException ex) {
-        return new ErroResposta(
+    public ErrorResponse handleFieldInvalidException(FieldInvalidException ex) {
+        return new ErrorResponse(
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                "Erro validação.",
-                List.of(new ErroCampo(ex.getCampo(), ex.getMessage())));
+                "Validation error",
+                List.of(new ErrorField(ex.getField(), ex.getMessage()))
+        );
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErroResposta handleAccessDeniedException(AccessDeniedException ex) {
-        return new ErroResposta(HttpStatus.FORBIDDEN.value(), "Acesso negado", List.of());
+    public ErrorResponse handleAccessDeniedException(AccessDeniedException ex) {
+        return new ErrorResponse(HttpStatus.FORBIDDEN.value(), "Access denied", List.of());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErroResposta handleResourceNotFoundException(ResourceNotFoundException ex) {
-        return ErroResposta.naoEncontrado(ex.getMessage());
+    public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return ErrorResponse.notFound(ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErroResposta handleErrosNaoTratados(RuntimeException ex) {
-        return new ErroResposta(
+    public ErrorResponse handleUnhandledException(RuntimeException ex) {
+        return new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Erro inesperado. Entre em contato com o administrador",
+                "Unexpected error. Please contact the administrator.",
                 List.of());
     }
 }

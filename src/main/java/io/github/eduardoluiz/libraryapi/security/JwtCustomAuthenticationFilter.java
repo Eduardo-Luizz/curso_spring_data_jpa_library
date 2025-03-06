@@ -1,7 +1,7 @@
 package io.github.eduardoluiz.libraryapi.security;
 
-import io.github.eduardoluiz.libraryapi.model.Usuario;
-import io.github.eduardoluiz.libraryapi.service.UsuarioService;
+import io.github.eduardoluiz.libraryapi.model.User;
+import io.github.eduardoluiz.libraryapi.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtCustomAuthenticationFilter extends OncePerRequestFilter {
 
-    private final UsuarioService usuarioService;
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(
@@ -29,11 +29,11 @@ public class JwtCustomAuthenticationFilter extends OncePerRequestFilter {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(deveConverter(authentication)) {
+        if(shouldConvert(authentication)) {
             String login = authentication.getName();
-            Usuario usuario = usuarioService.obterPorLogin(login);
-            if(usuario != null) {
-                authentication = new CustomAuthentication(usuario);
+            User user = userService.getByLogin(login);
+            if(user != null) {
+                authentication = new CustomAuthentication(user);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
@@ -41,7 +41,7 @@ public class JwtCustomAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean deveConverter(Authentication authentication) {
+    private boolean shouldConvert(Authentication authentication) {
         return authentication != null && authentication instanceof JwtAuthenticationToken;
     }
 }

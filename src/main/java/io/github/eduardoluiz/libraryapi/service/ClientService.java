@@ -13,13 +13,13 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Client salvar(Client client) {
-        var senhaCriptografada = passwordEncoder.encode(client.getClientSecret());
-        client.setClientSecret(senhaCriptografada);
+    public Client save(Client client) {
+        String encryptedSecret = passwordEncoder.encode(client.getClientSecret());
+        client.setClientSecret(encryptedSecret);
         return clientRepository.save(client);
     }
 
-    public Client obterPorClientID(String clientId) {
+    public Client getByClientId(String clientId) {
         return clientRepository.findByClientId(clientId);
     }
 }
