@@ -1,6 +1,7 @@
 package io.github.eduardoluiz.libraryapi.service;
 
 import io.github.eduardoluiz.libraryapi.exceptions.OperationNotAllowedException;
+import io.github.eduardoluiz.libraryapi.exceptions.ResourceNotFoundException;
 import io.github.eduardoluiz.libraryapi.model.Author;
 import io.github.eduardoluiz.libraryapi.model.User;
 import io.github.eduardoluiz.libraryapi.repository.AuthorRepository;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,8 +41,9 @@ public class AuthorService {
         authorRepository.save(author);
     }
 
-    public Optional<Author> getById(UUID id) {
-        return authorRepository.findById(id);
+    public Author getById(UUID id) {
+        return authorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Author not found. ID: " + id));
     }
 
     public void delete(Author author) {

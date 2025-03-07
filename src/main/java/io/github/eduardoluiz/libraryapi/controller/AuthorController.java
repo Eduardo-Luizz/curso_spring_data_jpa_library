@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/autores")
+@RequestMapping("/authors")
 @RequiredArgsConstructor
 @Tag(name = "Authors")
 public class AuthorController implements GenericController {
@@ -39,12 +38,12 @@ public class AuthorController implements GenericController {
             @ApiResponse(responseCode = "422", description = "Validation error"),
 
     })
-    public ResponseEntity<Void> salvarAutor(@RequestBody @Valid AuthorDTO dto) {
-
+    public ResponseEntity<AuthorDTO> save(@RequestBody @Valid AuthorDTO dto) {
         Author author = authorMapper.toEntity(dto);
-        authorService.save(author);
-        URI location = gerarHeaderLocation(author.getId());
-        return ResponseEntity.created(location).build();
+        Author savedAuthor = authorService.save(author);
+        URI location = generateHeaderLocation(author.getId());
+        AuthorDTO savedDto =  authorMapper.toDto(savedAuthor);
+        return ResponseEntity.created(location).body(savedDto);
     }
 
     @GetMapping("{id}")
@@ -55,15 +54,11 @@ public class AuthorController implements GenericController {
             @ApiResponse(responseCode = "404", description = "Author not found"),
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
     })
-    public ResponseEntity<AuthorDTO> obterDetalhes(@PathVariable("id") String id) {
-
-        var idAutor = UUID.fromString(id);
-        return authorService
-                .getById(idAutor)
-                .map(autor -> {
-                    AuthorDTO dto = authorMapper.toDto(autor);
-                    return ResponseEntity.ok(dto);
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<AuthorDTO> searchById(@PathVariable("id") String id) {
+        UUID authorId = UUID.fromString(id);
+        Author author = authorService.getById(authorId);
+        AuthorDTO dto = authorMapper.toDto(author);
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("{id}")
@@ -74,14 +69,10 @@ public class AuthorController implements GenericController {
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
             @ApiResponse(responseCode = "404", description = "Author not found")
     })
-    public ResponseEntity<Void> deleteAutor(@PathVariable("id") String id) {
-
-        var idAutor = UUID.fromString(id);
-        Optional<Author> autorOptional = authorService.getById(idAutor);
-        if (autorOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        authorService.delete(autorOptional.get());
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+        UUID authorId = UUID.fromString(id);
+        Author author = authorService.getById(authorId);
+        authorService.delete(author);
         return ResponseEntity.noContent().build();
     }
 
@@ -94,16 +85,16 @@ public class AuthorController implements GenericController {
             @ApiResponse(responseCode = "200", description = "Search carried out successfully"),
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions")
     })
-    public ResponseEntity<List<AuthorDTO>> pesquisar(
-            @RequestParam(value = "nome", required = false) String nome,
-            @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
+    public ResponseEntity<List<AuthorDTO>> search(
+            @RequestParam(value = "name", required = false) String nome,
+            @RequestParam(value = "nationality", required = false) String nationality) {
 
-        List<Author> resultado = authorService.searchByExample(nome, nacionalidade);
-        List<AuthorDTO> lista = resultado
+        List<Author> result = authorService.searchByExample(nome, nationality);
+        List<AuthorDTO> list = result
                 .stream()
                 .map(authorMapper::toDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(lista);
+        return ResponseEntity.ok(list);
     }
 
     @PutMapping("{id}")
@@ -115,20 +106,16 @@ public class AuthorController implements GenericController {
             @ApiResponse(responseCode = "404", description = "Author not found"),
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
     })
-    public ResponseEntity<Void> atualizar(
+    public ResponseEntity<Void> update(
             @PathVariable("id") String id,
             @RequestBody @Valid AuthorDTO dto) {
 
-        var idAutor = UUID.fromString(id);
-        Optional<Author> autorOptional = authorService.getById(idAutor);
-        if (autorOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        var autor = autorOptional.get();
-        autor.setName(dto.name());
-        autor.setBirthDate(dto.birthDate());
-        autor.setNationality(dto.nationality());
-        authorService.update(autor);
+        UUID authorId = UUID.fromString(id);
+        Author author = authorService.getById(authorId);
+        author.setName(dto.name());
+        author.setBirthDate(dto.birthDate());
+        author.setNationality(dto.nationality());
+        authorService.update(author);
         return ResponseEntity.noContent().build();
     }
 }

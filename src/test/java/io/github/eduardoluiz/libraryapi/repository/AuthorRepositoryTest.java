@@ -26,9 +26,9 @@ public class AuthorRepositoryTest {
     @Test
     public void salvarTest() {
         Author author = new Author();
-        author.setNome("Maria");
-        author.setNacionalidade("Feminino");
-        author.setDataNascimento(LocalDate.of(1990, 1, 1));
+        author.setName("Maria");
+        author.setNationality("Feminino");
+        author.setBirthDate(LocalDate.of(1990, 1, 1));
         var autorSalvo = authorRepository.save(author);
         System.out.println(autorSalvo);
     }
@@ -41,7 +41,7 @@ public class AuthorRepositoryTest {
         if (possivelAutor.isPresent()) {
 
             Author authorEncontrado = possivelAutor.get();
-            authorEncontrado.setDataNascimento(LocalDate.of(1990, 2, 2));
+            authorEncontrado.setBirthDate(LocalDate.of(1990, 2, 2));
             authorRepository.save(authorEncontrado);
 
             System.out.println(authorEncontrado);
@@ -76,24 +76,24 @@ public class AuthorRepositoryTest {
     @Test
     public void salvarAutorComLivroTest() {
         Author author = new Author();
-        author.setNome("Antônio");
-        author.setNacionalidade("Americano");
-        author.setDataNascimento(LocalDate.of(1980, 11, 11));
+        author.setName("Antônio");
+        author.setNationality("Americano");
+        author.setBirthDate(LocalDate.of(1980, 11, 11));
 
         Book book = new Book();
-        book.setTitulo("Algoritmos");
+        book.setTitle("Algoritmos");
         book.setIsbn("76564831239");
-        book.setPreco(BigDecimal.valueOf(204.50));
-        book.setGenero(BookGenre.CIENCIA);
-        book.setDataPublicacao(LocalDate.of(2000, 1, 1).atStartOfDay());
+        book.setPrice(BigDecimal.valueOf(204.50));
+        book.setGenre(BookGenre.SCIENCE);
+        book.setPublicationDate(LocalDate.of(2000, 1, 1).atStartOfDay());
         book.setAuthor(author);
 
         Book book2 = new Book();
-        book2.setTitulo("O roubo a casa da moeda");
+        book2.setTitle("O roubo a casa da moeda");
         book2.setIsbn("735135123");
-        book2.setPreco(BigDecimal.valueOf(20.50));
-        book2.setGenero(BookGenre.FANTASIA);
-        book2.setDataPublicacao(LocalDate.of(2004, 1, 1).atStartOfDay());
+        book2.setPrice(BigDecimal.valueOf(20.50));
+        book2.setGenre(BookGenre.FANTASY);
+        book2.setPublicationDate(LocalDate.of(2004, 1, 1).atStartOfDay());
         book2.setAuthor(author);
 
         author.setBooks(new ArrayList<>());
