@@ -2,6 +2,7 @@ package io.github.eduardoluiz.libraryapi.service;
 
 import io.github.eduardoluiz.libraryapi.controller.dto.UserRequestDTO;
 import io.github.eduardoluiz.libraryapi.controller.dto.UserResponseDTO;
+import io.github.eduardoluiz.libraryapi.exceptions.DuplicateRecordException;
 import io.github.eduardoluiz.libraryapi.exceptions.ResourceNotFoundException;
 import io.github.eduardoluiz.libraryapi.model.User;
 import io.github.eduardoluiz.libraryapi.repository.UserRepository;
@@ -27,11 +28,21 @@ public class UserService {
     private final UserValidator userValidator;
 
     public UserResponseDTO save(UserRequestDTO dto) {
+
+        if(userRepository.existsByEmail(dto.email())) {
+            throw new DuplicateRecordException("Email already exists");
+        }
+
         User user = new User();
         user.setLogin(dto.login());
         user.setPassword(passwordEncoder.encode(dto.password()));
         user.setEmail(dto.email());
-        user.setRoles(dto.roles());
+
+        if (dto.roles() == null) {
+            user.setRoles(List.of("OPERADOR"));
+        } else {
+            user.setRoles(dto.roles());
+        }
         User saved = userRepository.save(user);
 
         return new UserResponseDTO(

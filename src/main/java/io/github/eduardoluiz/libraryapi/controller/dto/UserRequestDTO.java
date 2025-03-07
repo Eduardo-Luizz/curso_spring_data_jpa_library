@@ -18,6 +18,4 @@ public record UserRequestDTO(
         @NotBlank(message = "Email is required")
         String email,
 
-        List<String> roles) {
-
-}
+        List<String> roles) {}

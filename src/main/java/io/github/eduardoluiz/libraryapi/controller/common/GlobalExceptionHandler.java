@@ -6,6 +6,7 @@ import io.github.eduardoluiz.libraryapi.exceptions.FieldInvalidException;
 import io.github.eduardoluiz.libraryapi.exceptions.OperationNotAllowedException;
 import io.github.eduardoluiz.libraryapi.exceptions.DuplicateRecordException;
 import io.github.eduardoluiz.libraryapi.exceptions.ResourceNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
@@ -63,6 +64,22 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException ex) {
         return ErrorResponse.notFound(ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        String message = "Duplicate key violation.";
+        Throwable rootCause = ex.getRootCause();
+
+        if (rootCause != null && rootCause.getMessage() != null) {
+            String causeMessage = rootCause.getMessage().toLowerCase();
+            if (causeMessage.contains("email")) {
+                message = "Email already exists.";
+            }
+        }
+
+        return ErrorResponse.conflict(message);
     }
 
     @ExceptionHandler(Exception.class)

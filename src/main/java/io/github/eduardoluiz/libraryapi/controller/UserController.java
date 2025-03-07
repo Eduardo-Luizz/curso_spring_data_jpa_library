@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("usuarios")
+@RequestMapping("users")
 @RequiredArgsConstructor
 @Tag(name = "Users")
 public class UserController {
@@ -37,7 +37,7 @@ public class UserController {
             @ApiResponse(responseCode = "422", description = "Data validation error"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public UserResponseDTO postUsuario(@Valid @RequestBody UserRequestDTO userRequestDTO) {
+    public UserResponseDTO save(@Valid @RequestBody UserRequestDTO userRequestDTO) {
         return userService.save(userRequestDTO);
     }
 
@@ -46,10 +46,10 @@ public class UserController {
     @Operation(summary = "List", description = "List user by UUID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User found successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
+            @ApiResponse(responseCode = "401", description = "Access denied – the user does not have the necessary permissions"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public UserResponseDTO buscarPorId(@PathVariable UUID id) {
+    public UserResponseDTO searchById(@PathVariable UUID id) {
         return userService.getById(id);
     }
 
@@ -60,23 +60,23 @@ public class UserController {
             description = "Returns a page of users based on the filters entered (login, roles and email). If no filter is provided, returns all paged users.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search carried out successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
+            @ApiResponse(responseCode = "401", description = "Access denied – the user does not have the necessary permissions"),
     })
-    public ResponseEntity<Page<UserResponseDTO>> pesquisa (
+    public ResponseEntity<Page<UserResponseDTO>> search(
             @RequestParam(value = "login", required = false)
             String login,
             @RequestParam(value = "roles", required = false)
             String roles,
             @RequestParam(value = "email", required = false)
             String email,
-            @RequestParam(value = "pagina", defaultValue = "0")
-            Integer pagina,
-            @RequestParam(value = "tamanho-pagina", defaultValue = "10")
-            Integer tamanhoPagina
+            @RequestParam(value = "page", defaultValue = "0")
+            Integer page,
+            @RequestParam(value = "sizePage", defaultValue = "10")
+            Integer sizePage
     ) {
-        Page<User> paginaResultado = userService.search(login, roles, email, pagina, tamanhoPagina);
-        Page<UserResponseDTO> resultado = paginaResultado.map(userMapper::toResponseDTO);
-        return ResponseEntity.ok(resultado);
+        Page<User> pageResult = userService.search(login, roles, email, page, sizePage);
+        Page<UserResponseDTO> result = pageResult.map(userMapper::toResponseDTO);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{id}")
@@ -88,7 +88,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public UserResponseDTO atualizar(
+    public UserResponseDTO update(
             @PathVariable UUID id,
             @RequestBody @Valid UserRequestDTO dto
     ) {
@@ -104,7 +104,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the MANAGER role"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public UserResponseDTO atualizarRoles(
+    public UserResponseDTO updateRoles(
             @PathVariable UUID id,
             @RequestBody @Valid RolesDTO rolesDTO
     ) {
@@ -121,7 +121,7 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "Operation not permitted – user has associations that prevent deletion")
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletar(@PathVariable UUID id) {
+    public void delete(@PathVariable UUID id) {
         userService.delete(id);
     }
 }
