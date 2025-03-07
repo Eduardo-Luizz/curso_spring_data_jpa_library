@@ -6,7 +6,7 @@ import java.net.URI;
 import java.util.UUID;
 
 public interface GenericController {
-    default URI gerarHeaderLocation(UUID id) {
+    default URI generateHeaderLocation(UUID id) {
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path("/{id}")

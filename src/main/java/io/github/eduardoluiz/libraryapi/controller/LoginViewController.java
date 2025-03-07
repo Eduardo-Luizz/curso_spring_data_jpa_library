@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class LoginViewController {
 
     @GetMapping("/login")
-    public String paginaLogin() {
+    public String pageLogin() {
         return "login";
     }
 
     @GetMapping("/")
     @ResponseBody
-    public String paginaHome(Authentication authentication) {
+    public String pageHome(Authentication authentication) {
         if(authentication instanceof CustomAuthentication customAuthentication) {
             System.out.println(customAuthentication.getUser());
         }
-        return "Olá" + authentication.getName();
+        return "Hello" + authentication.getName();
     }
 
     @GetMapping("/authorized")

@@ -33,7 +33,7 @@ public class ClientController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the MANAGER role")
     })
-    public ResponseEntity<ClientDTO> salvar(@Valid @RequestBody ClientDTO dto) {
+    public ResponseEntity<ClientDTO> save(@Valid @RequestBody ClientDTO dto) {
         Client client = clientMapper.toEntity(dto);
         Client saved = clientService.save(client);
         return ResponseEntity.status(HttpStatus.CREATED)
