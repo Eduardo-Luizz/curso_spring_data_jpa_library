@@ -25,11 +25,11 @@ public class BookRepositoryTest {
     @Test
     public void salvarLivroTest() {
         Book book = new Book();
-        book.setTitulo("Livro Test");
+        book.setTitle("Livro Test");
         book.setIsbn("1234567890");
-        book.setPreco(BigDecimal.valueOf(100.0));
-        book.setGenero(BookGenre.FICTION);
-        book.setDataPublicacao(LocalDate.of(1980, 1, 1).atStartOfDay());
+        book.setPrice(BigDecimal.valueOf(100.0));
+        book.setGenre(BookGenre.FICTION);
+        book.setPublicationDate(LocalDate.of(1980, 1, 1).atStartOfDay());
 
         Author author = authorRepository.findById(UUID.fromString("523ed437-2efc-4a9b-9202-acb12121c8df")).orElse(null);
         book.setAuthor(author);
@@ -40,16 +40,16 @@ public class BookRepositoryTest {
     @Test
     public void salvarLivroTestCacade() {
         Book book = new Book();
-        book.setTitulo("Livro Test");
+        book.setTitle("Livro Test");
         book.setIsbn("1234567890");
-        book.setPreco(BigDecimal.valueOf(100.0));
-        book.setGenero(BookGenre.FICTION);
-        book.setDataPublicacao(LocalDate.of(1980, 1, 1).atStartOfDay());
+        book.setPrice(BigDecimal.valueOf(100.0));
+        book.setGenre(BookGenre.FICTION);
+        book.setPublicationDate(LocalDate.of(1980, 1, 1).atStartOfDay());
 
         Author author = new Author();
-        author.setNome("João - Teste");
-        author.setNacionalidade("Masculino");
-        author.setDataNascimento(LocalDate.of(1990, 1, 1));
+        author.setName("João - Teste");
+        author.setNationality("Masculino");
+        author.setBirthDate(LocalDate.of(1990, 1, 1));
 
         book.setAuthor(author);
 
@@ -79,7 +79,7 @@ public class BookRepositoryTest {
         UUID id = UUID.fromString("f0c60601-32cb-4cfb-9106-ac0fc8fd6299");
         Book book = bookRepository.findById(id).orElse(null);
 
-        System.out.println("Título livro: " + book.getTitulo());
+        System.out.println("Título livro: " + book.getTitle());
 //        System.out.println("Autor livro: " + livro.getAutor().getNome()); Com o Lazy devemos comentar essa linha
     }
 

@@ -3,6 +3,7 @@ package io.github.eduardoluiz.libraryapi.service;
 import io.github.eduardoluiz.libraryapi.controller.dto.RegistrationBookDTO;
 import io.github.eduardoluiz.libraryapi.controller.dto.ResultSearchBookDTO;
 import io.github.eduardoluiz.libraryapi.controller.mappers.BookMapper;
+import io.github.eduardoluiz.libraryapi.exceptions.ResourceNotFoundException;
 import io.github.eduardoluiz.libraryapi.model.Author;
 import io.github.eduardoluiz.libraryapi.model.Book;
 import io.github.eduardoluiz.libraryapi.model.BookGenre;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -35,7 +35,7 @@ public class BookService {
     public ResultSearchBookDTO save(RegistrationBookDTO dto) {
         Book book = bookMapper.toEntity(dto);
         Author author = authorRepository.findById(dto.authorId())
-                .orElseThrow(() -> new IllegalArgumentException("Author not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Author not found!"));
         book.setAuthor(author);
         bookValidator.validate(book);
         User user = securityService.getLoggedInUser();
@@ -44,8 +44,9 @@ public class BookService {
         return bookMapper.toBookSearchResultDTO(savedBook);
     }
 
-    public Optional<Book> getById(UUID id) {
-        return bookRepository.findById(id);
+    public Book getById(UUID id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found. ID: " + id));
     }
 
     public void delete(Book book) {
@@ -89,25 +90,24 @@ public class BookService {
         return bookRepository.findAll(specs, pageRequest);
     }
 
-    public boolean update(UUID id, RegistrationBookDTO dto) {
+    public ResultSearchBookDTO update(UUID id, RegistrationBookDTO dto) {
 
-        Book oldBook = bookRepository.findById(id).orElse(null);
-
-        if (oldBook == null) {
-            return false;
-        }
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found. ID: " + id));
 
         Author author = authorRepository.findById(dto.authorId())
-                .orElseThrow(() -> new IllegalArgumentException("Author not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Author not found. ID: " + dto.authorId()));
 
+        existingBook.setIsbn(dto.isbn());
+        existingBook.setTitle(dto.title());
+        existingBook.setPublicationDate(dto.publicationDate());
+        existingBook.setGenre(dto.genre());
+        existingBook.setPrice(dto.price());
+        existingBook.setAuthor(author);
 
-        Book updatedBook = bookMapper.toEntity(dto);
-        updatedBook.setId(oldBook.getId());
-        updatedBook.setAuthor(author);
+        bookValidator.validate(existingBook);
+        Book savedBook = bookRepository.save(existingBook);
 
-        bookValidator.validate(updatedBook);
-        bookRepository.save(updatedBook);
-
-        return true;
+        return bookMapper.toBookSearchResultDTO(savedBook);
     }
 }

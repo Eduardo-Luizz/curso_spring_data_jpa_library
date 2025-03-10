@@ -1,5 +1,6 @@
 package io.github.eduardoluiz.libraryapi.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ public record AuthorDTO(
 
         @NotNull(message = "Birth date is required")
         @Past(message = "Birth date must be in the past")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate birthDate,
 
         @NotBlank(message = "Nationality is required")

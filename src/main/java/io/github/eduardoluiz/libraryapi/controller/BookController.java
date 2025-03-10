@@ -3,8 +3,8 @@ package io.github.eduardoluiz.libraryapi.controller;
 import io.github.eduardoluiz.libraryapi.controller.dto.RegistrationBookDTO;
 import io.github.eduardoluiz.libraryapi.controller.dto.ResultSearchBookDTO;
 import io.github.eduardoluiz.libraryapi.controller.mappers.BookMapper;
-import io.github.eduardoluiz.libraryapi.model.BookGenre;
 import io.github.eduardoluiz.libraryapi.model.Book;
+import io.github.eduardoluiz.libraryapi.model.BookGenre;
 import io.github.eduardoluiz.libraryapi.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,10 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("livros")
+@RequestMapping("books")
 @RequiredArgsConstructor
 @Tag(name = "Books")
 public class BookController implements GenericController {
@@ -37,11 +38,11 @@ public class BookController implements GenericController {
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
             @ApiResponse(responseCode = "409", description = "Conflict – possibly duplicate ISBN")
     })
-    public ResponseEntity<Object> salvar(@RequestBody @Valid RegistrationBookDTO dto) {
+    public ResponseEntity<ResultSearchBookDTO> save(@RequestBody @Valid RegistrationBookDTO dto) {
 
-        ResultSearchBookDTO livroDTO = bookService.save(dto);
-        var url = gerarHeaderLocation(livroDTO.id());
-        return ResponseEntity.created(url).body(livroDTO);
+        ResultSearchBookDTO bookDTO = bookService.save(dto);
+        URI location = generateHeaderLocation(bookDTO.id());
+        return ResponseEntity.created(location).body(bookDTO);
     }
 
     @GetMapping("{id}")
@@ -52,12 +53,11 @@ public class BookController implements GenericController {
             @ApiResponse(responseCode = "404", description = "Book not found"),
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
     })
-    public ResponseEntity<ResultSearchBookDTO> obterDetalhesLivro(@PathVariable("id") String id) {
-        return bookService.getById(UUID.fromString(id))
-                .map(livro -> {
-                    var dto = bookMapper.toBookSearchResultDTO(livro);
-                    return ResponseEntity.ok(dto);
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ResultSearchBookDTO> searchById(@PathVariable("id") String id) {
+        UUID bookId = UUID.fromString(id);
+        Book book = bookService.getById(bookId);
+        ResultSearchBookDTO dto = bookMapper.toBookSearchResultDTO(book);
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("{id}")
@@ -68,12 +68,11 @@ public class BookController implements GenericController {
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
             @ApiResponse(responseCode = "404", description = "Book not found")
     })
-    public ResponseEntity<Object> deletar(@PathVariable("id") String id) {
-        return bookService.getById(UUID.fromString(id))
-                .map(livro -> {
-                    bookService.delete(livro);
-                    return ResponseEntity.noContent().build();
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Object> delete(@PathVariable("id") String id) {
+        UUID bookId = UUID.fromString(id);
+        Book book = bookService.getById(bookId);
+        bookService.delete(book);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
@@ -83,25 +82,25 @@ public class BookController implements GenericController {
             @ApiResponse(responseCode = "200", description = "Search carried out successfully"),
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
     })
-    public ResponseEntity<Page<ResultSearchBookDTO>> pesquisa(
+    public ResponseEntity<Page<ResultSearchBookDTO>> search(
             @RequestParam(value = "isbn", required = false)
             String isbn,
-            @RequestParam(value = "titulo", required = false)
-            String titulo,
-            @RequestParam(value = "nome-autor", required = false)
-            String nomeAutor,
-            @RequestParam(value = "genero", required = false)
-            BookGenre genero,
-            @RequestParam(value = "ano-publicacao", required = false)
-            String anoPublicacao,
-            @RequestParam(value = "pagina", defaultValue = "0")
-            Integer pagina,
-            @RequestParam(value = "tamanho-pagina", defaultValue = "10")
-            Integer tamanhoPagina
+            @RequestParam(value = "title", required = false)
+            String title,
+            @RequestParam(value = "nameAuthor", required = false)
+            String nameAuthor,
+            @RequestParam(value = "gender", required = false)
+            BookGenre gender,
+            @RequestParam(value = "yearPublication", required = false)
+            String yearPublication,
+            @RequestParam(value = "page", defaultValue = "0")
+            Integer page,
+            @RequestParam(value = "sizePage", defaultValue = "10")
+            Integer sizePage
     ) {
-        Page<Book> paginaResultado = bookService.search(isbn, titulo, nomeAutor, genero, anoPublicacao, pagina, tamanhoPagina);
-        Page<ResultSearchBookDTO> resultado = paginaResultado.map(bookMapper::toBookSearchResultDTO);
-        return ResponseEntity.ok(resultado);
+        Page<Book> pageResult = bookService.search(isbn, title, nameAuthor, gender, yearPublication, page, sizePage);
+        Page<ResultSearchBookDTO> result = pageResult.map(bookMapper::toBookSearchResultDTO);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("{id}")
@@ -113,15 +112,11 @@ public class BookController implements GenericController {
             @ApiResponse(responseCode = "404", description = "Book not found"),
             @ApiResponse(responseCode = "403", description = "Access denied – the user does not have the necessary permissions"),
     })
-    public ResponseEntity<Object> atualizar(
+    public ResponseEntity<ResultSearchBookDTO> update(
             @PathVariable("id") UUID id,
             @RequestBody @Valid RegistrationBookDTO dto) {
-
-        boolean atualizado = bookService.update(id, dto);
-
-        if (!atualizado) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.noContent().build();
+        ResultSearchBookDTO updatedBookDTO = bookService.update(id, dto);
+        return ResponseEntity.ok(updatedBookDTO);
     }
+
 }
